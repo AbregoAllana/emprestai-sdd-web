@@ -4,6 +4,7 @@ import { Login } from './Login'
 import { supabase } from './auth'
 import { borrowEquipment, listEquipment, listMyLoans, type OpenLoan } from './api'
 import { CatalogHeader, EquipmentCard, FilterBar, LoanDialog, Navigation, StatusState, type Page } from './components'
+import { ApiError } from './api-request'
 import { formatDate, type Equipment, type EquipmentStatus, type Filter } from './equipment'
 
 const currentUser = { name: 'Minha conta', initials: 'EU', role: 'Colaborador' }
@@ -38,10 +39,11 @@ function CatalogApp() {
     ))
   }, [filter, items, query])
 
+  const canConfirm = items.some((item) => item.id === selected?.id && item.status === 'disponivel')
   const closeDialog = useCallback(() => { setSelected(null) }, [])
 
   async function confirmRequest() {
-    if (!selected || submitting || dueAt) return
+    if (!selected || !canConfirm || submitting || dueAt) return
     setSubmitting(true)
     setLoanError('')
     try {
@@ -50,6 +52,10 @@ function CatalogApp() {
       setItems((previous) => previous.map((item) => item.id === selected.id ? { ...item, status: 'emprestado' } : item))
     } catch (reason: unknown) {
       setLoanError(reason instanceof Error ? reason.message : 'Não foi possível solicitar o equipamento.')
+      if (reason instanceof ApiError && reason.status === 409) {
+        const refreshed = await listEquipment().catch(() => null)
+        if (refreshed) setItems(refreshed)
+      }
     } finally {
       setSubmitting(false)
     }
@@ -81,7 +87,7 @@ function CatalogApp() {
           </section>
         </>}
       </main>
-      {selected && <LoanDialog item={selected} dueAt={dueAt} busy={submitting} error={loanError} onCancel={closeDialog} onConfirm={() => void confirmRequest()} />}
+      {selected && <LoanDialog item={selected} dueAt={dueAt} busy={submitting} canConfirm={canConfirm} error={loanError} onCancel={closeDialog} onConfirm={() => void confirmRequest()} />}
     </div>
   )
 }

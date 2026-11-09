@@ -2,6 +2,7 @@ import { fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, expect, test, vi } from 'vitest'
 import { App } from './App'
+import { ApiError } from './api-request'
 import { borrowEquipment, listEquipment, listMyLoans } from './api'
 
 const state = vi.hoisted(() => ({ userId: null as string | null }))
@@ -83,6 +84,22 @@ test('003/CA-03 exibe o motivo da recusa no diálogo', async () => {
   render(<App />)
   const dialog = await confirm()
   expect(await within(dialog).findByRole('alert')).toHaveTextContent('Limite de 3 empréstimos')
+})
+
+test('003/CA-03 e CA-04 sincroniza o catálogo quando outra solicitação vence a disputa', async () => {
+  vi.mocked(listEquipment)
+    .mockResolvedValueOnce([notebook])
+    .mockResolvedValueOnce([{ ...notebook, status: 'emprestado' }])
+  vi.mocked(borrowEquipment).mockRejectedValue(new ApiError('Equipamento indisponível', 409))
+  render(<App />)
+  const dialog = await confirm()
+  expect(await within(dialog).findByRole('alert')).toHaveTextContent('Equipamento indisponível')
+  expect(await screen.findByRole('button', { name: 'Emprestado' })).toBeDisabled()
+  const retry = await within(dialog).findByRole('button', { name: 'Confirmar solicitação' })
+  expect(retry).toBeDisabled()
+  fireEvent.click(retry)
+  expect(borrowEquipment).toHaveBeenCalledTimes(1)
+  expect(listEquipment).toHaveBeenCalledTimes(2)
 })
 
 test('003/CA-05 Meus empréstimos lista equipamento e data', async () => {

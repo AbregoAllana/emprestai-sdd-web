@@ -106,8 +106,8 @@ function StatusPill({ status }: { status: EquipmentStatus }) {
   return <span className={`status-pill status-${status}`}>{statusCopy[status]}</span>
 }
 
-export function LoanDialog({ item, dueAt, busy, error, onCancel, onConfirm }: {
-  item: Equipment; dueAt?: string; busy: boolean; error: string; onCancel: () => void; onConfirm: () => void
+export function LoanDialog({ item, dueAt, busy, canConfirm, error, onCancel, onConfirm }: {
+  item: Equipment; dueAt?: string; busy: boolean; canConfirm: boolean; error: string; onCancel: () => void; onConfirm: () => void
 }) {
   const cancelRef = useRef<HTMLButtonElement>(null)
 
@@ -136,7 +136,7 @@ export function LoanDialog({ item, dueAt, busy, error, onCancel, onConfirm }: {
         {error && <p role="alert">{error}</p>}
         <div className="dialog-actions">
           <button className="btn btn-secondary" type="button" ref={cancelRef} disabled={busy} onClick={onCancel}>{dueAt ? 'Fechar' : 'Cancelar'}</button>
-          {!dueAt && <button className="btn btn-primary" type="button" disabled={busy} onClick={onConfirm}>{busy ? 'Solicitando…' : 'Confirmar solicitação'}</button>}
+          {!dueAt && <button className="btn btn-primary" type="button" disabled={busy || !canConfirm} onClick={onConfirm}>{busy ? 'Solicitando…' : 'Confirmar solicitação'}</button>}
         </div>
       </section>
     </div>

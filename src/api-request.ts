@@ -2,6 +2,12 @@ import { supabase } from './auth'
 
 const apiUrl = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '')
 
+export class ApiError extends Error {
+  constructor(message: string, readonly status: number) {
+    super(message)
+  }
+}
+
 export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T> {
   if (!apiUrl || !supabase) throw new Error('Configure a API e o Supabase para usar o sistema.')
   const { data } = await supabase.auth.getSession()
@@ -14,7 +20,7 @@ export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T
   if (!response.ok) {
     const body: unknown = await response.json().catch(() => null)
     const message = body && typeof body === 'object' && 'message' in body ? body.message : null
-    throw new Error(typeof message === 'string' ? message : 'Não foi possível concluir a operação.')
+    throw new ApiError(typeof message === 'string' ? message : 'Não foi possível concluir a operação.', response.status)
   }
   return response.json() as Promise<T>
 }
