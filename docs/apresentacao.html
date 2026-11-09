@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>emprest.ai — Apresentação (3 slides)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Raleway:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Paleta Boho Chic Contemporâneo / Warm Minimalism */
+  --pearl:#EAE0C8;        /* ⚪ Pérola — cor principal (fundo/base) */
+  --offwhite:#F2F0EF;     /* 🪞 Branco Sujo — neutro complementar */
+  --rose:#DCA1A1;         /* 🪵 Rosa Empoeirada — acento */
+  --rose-100:#F9EEEE; --rose-200:#F4DDDD; --rose-300:#EDCACA; --rose-400:#E4B3B3;
+  --rose-600:#CE8C8C; --rose-700:#B97373; --rose-800:#9E5F5F; --rose-900:#7F4A4A;
+  --slate:#6D8196;        /* 🪨 Cinza Ardósia — contraste moderno */
+  --slate-ink:#4A5A6C; --slate-soft:#93A3B3;
+  --clay:#BFAFA4;         /* 🪵 Argila Terrosa — peso visual */
+  --clay-ink:#947F6F; --clay-soft:#D9CDC3; --clay-dark:#5F4F44;
+  --ink:#4A5A6C;
+  --sans:"Raleway","Segoe UI",system-ui,sans-serif;
+  --serif:"Cormorant Garamond",Georgia,"Times New Roman",serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:var(--sans);color:var(--ink);background:var(--pearl);overflow:hidden;-webkit-font-smoothing:antialiased}
+
+/* ---------- deck ---------- */
+.deck{position:fixed;inset:0;overflow:hidden}
+.slide{
+  position:absolute;inset:0;display:grid;place-items:center;
+  padding:56px 76px 96px;
+  background:radial-gradient(1100px 620px at 84% -12%, rgba(220,161,161,.16), transparent 62%), var(--pearl);
+  opacity:0;visibility:hidden;transform:translateY(16px);
+  transition:opacity .5s ease,transform .5s ease;
+}
+.slide.active{opacity:1;visibility:visible;transform:none}
+.slide:nth-child(2){background:radial-gradient(900px 540px at -8% 108%, rgba(191,175,164,.28), transparent 60%), var(--pearl)}
+
+/* ---------- decoração boho ---------- */
+.deco{position:absolute;pointer-events:none;z-index:0}
+.deco.arch{left:3.5%;bottom:-2px;width:min(27vw,380px);opacity:.9;animation:floatIn 1s .1s ease both}
+.deco.pampas{right:4%;bottom:0;width:min(16vw,230px);opacity:.85;animation:floatIn 1s .2s ease both}
+.deco.sun{top:7%;right:9%;width:min(11vw,150px);opacity:.9;animation:floatIn 1s .15s ease both}
+.deco.rings{left:2%;top:9%;width:min(12vw,170px);opacity:.6;animation:floatIn 1s .25s ease both}
+.deco.arch.tall{right:4%;left:auto;bottom:-2px;height:52vh;width:auto;opacity:.55}
+@keyframes floatIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes cardIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+/* ---------- conteúdo ---------- */
+.wrap{position:relative;z-index:1;width:100%;max-width:1160px}
+.kicker{
+  display:inline-flex;align-items:center;gap:14px;
+  font-size:12.5px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--rose-700);
+}
+.kicker::before{content:"";height:1px;width:36px;background:var(--rose)}
+.kicker::after{content:"";height:1px;width:12px;background:var(--clay)}
+h1{
+  font-family:var(--serif);font-weight:500;font-size:clamp(42px,6vw,82px);
+  line-height:1.05;letter-spacing:-.01em;color:var(--clay-dark);
+  margin:20px 0 16px;text-wrap:pretty;
+}
+h1 em{font-style:italic;color:var(--rose-700)}
+.lead{font-size:clamp(16px,1.45vw,20px);line-height:1.6;color:var(--slate-ink);max-width:640px;font-weight:400}
+.lead b{color:var(--clay-dark);font-weight:600}
+
+/* ---------- cards ---------- */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin-top:34px}
+.card{
+  position:relative;background:var(--offwhite);border:1px solid rgba(191,175,164,.55);
+  border-radius:18px;padding:22px 22px 20px;
+  box-shadow:0 1px 0 rgba(242,240,239,.95) inset, 0 10px 26px -22px rgba(95,79,68,.45);
+  transition:transform .25s ease,box-shadow .25s ease;
+}
+.card:hover{transform:translateY(-4px);box-shadow:0 16px 30px -22px rgba(95,79,68,.55)}
+.card .num{
+  font-family:var(--serif);font-style:italic;font-weight:600;font-size:30px;line-height:1;
+  color:var(--rose-700);margin-bottom:14px;display:inline-block;
+}
+.card h3{font-size:16.5px;font-weight:700;color:var(--clay-dark);margin-bottom:6px;letter-spacing:.005em}
+.card p{font-size:14px;line-height:1.55;color:var(--slate-ink)}
+
+/* ---------- slide 2: solução ---------- */
+.split{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+.roles{margin-top:26px;display:grid;gap:12px;max-width:520px}
+.role{
+  display:flex;gap:12px;align-items:flex-start;font-size:15px;line-height:1.55;color:var(--slate-ink);
+}
+.role::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--rose);margin-top:8px;box-shadow:0 0 0 4px rgba(220,161,161,.18)}
+.role b{color:var(--clay-dark);font-weight:700}
+.featurelist{
+  background:var(--offwhite);border:1px solid rgba(191,175,164,.55);border-radius:20px;
+  padding:14px 20px;box-shadow:0 18px 40px -26px rgba(95,79,68,.5);
+}
+.feat{display:flex;gap:16px;align-items:center;padding:15px 8px;border-bottom:1px dashed rgba(191,175,164,.6)}
+.feat:last-child{border-bottom:none}
+.feat .n{
+  flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;
+  font-family:var(--serif);font-style:italic;font-size:19px;font-weight:600;color:var(--rose-800);
+  background:rgba(220,161,161,.16);border:1px solid rgba(220,161,161,.5);
+}
+.feat b{display:block;font-size:15.5px;font-weight:700;color:var(--clay-dark)}
+.feat p{font-size:13.5px;line-height:1.45;color:var(--slate-ink);margin-top:2px}
+
+/* ---------- slide 3: regras e meta ---------- */
+.cards.rules{gap:16px;margin-top:30px}
+.card .big{margin-bottom:10px}
+.card .big b{font-family:var(--serif);font-weight:600;color:var(--clay-dark);margin-right:6px}
+.card .badge-num{
+  font-family:var(--serif);font-style:italic;font-weight:600;font-size:34px;line-height:1;
+  color:var(--rose-700);margin-bottom:12px;display:inline-block;
+}
+.card.slate-card .badge-num{color:var(--slate)}
+.card.alert-card .badge-num{color:var(--rose-800)}
+.success{
+  margin-top:28px;display:flex;gap:16px;align-items:flex-start;
+  background:rgba(220,161,161,.14);border:1px solid rgba(220,161,161,.5);border-radius:16px;
+  padding:18px 22px;font-size:16px;line-height:1.55;color:var(--clay-dark);
+}
+.success .mark{
+  flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;
+  background:var(--rose);color:var(--offwhite);font-size:16px;
+}
+.success b{font-weight:700}
+.out{
+  margin-top:22px;font-size:12.5px;letter-spacing:.04em;color:var(--clay-ink);text-align:center;
+}
+.out::before{content:"— ";}
+
+/* ---------- chrome (navegação) ---------- */
+.chrome{
+  position:fixed;left:0;right:0;bottom:0;z-index:30;
+  display:flex;align-items:center;gap:18px;justify-content:center;
+  padding:18px 40px 22px;
+  background:linear-gradient(to top, rgba(234,224,200,.96), rgba(234,224,200,0));
+}
+.brand{
+  position:absolute;left:34px;bottom:20px;font-weight:700;font-size:16px;letter-spacing:.02em;color:var(--clay-dark);
+  font-family:var(--serif);font-style:italic;
+}
+.brand span{color:var(--rose-700);font-weight:600}
+.hint{position:absolute;right:34px;bottom:24px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--clay-ink)}
+.arrow{
+  all:unset;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;cursor:pointer;
+  color:var(--rose-700);border:1px solid rgba(220,161,161,.6);background:rgba(220,161,161,.09);
+  font-size:17px;transition:background .2s,color .2s;
+}
+.arrow:hover{background:var(--rose);color:var(--offwhite)}
+.dots{display:flex;gap:10px}
+.dot{width:26px;height:5px;border-radius:99px;border:none;cursor:pointer;background:var(--clay-soft);transition:background .25s,width .25s;padding:0}
+.dot.active{background:var(--rose-700);width:42px}
+.count{font-size:12px;letter-spacing:.2em;color:var(--slate-ink);font-family:var(--serif);font-style:italic;font-weight:600}
+
+/* ---------- impressão ---------- */
+@media print{
+  @page{size:landscape;margin:0}
+  body{overflow:visible;background:#fff}
+  .chrome,.hint{display:none!important}
+  .deck{position:static}
+  .slide{position:relative;inset:auto;opacity:1!important;visibility:visible!important;transform:none!important;height:100vh;width:100vw;page-break-after:always;border-bottom:1px solid rgba(191,175,164,.4)}
+  .slide:last-child{page-break-after:auto}
+}
+</style>
+</head>
+<body>
+<main class="deck" id="deck">
+<!-- SLIDE:1 -->
+<section class="slide" data-num="1">
+  <svg class="deco arch" viewBox="0 0 220 300" aria-hidden="true">
+    <path d="M26 300 V 172 A 84 84 0 0 1 194 172 V 300" fill="none" stroke="var(--rose-500)" stroke-width="1.4" opacity=".55"/>
+    <circle cx="26" cy="168" r="3.2" fill="var(--rose-500)"/>
+    <circle cx="194" cy="168" r="3.2" fill="var(--rose-500)"/>
+    <path d="M64 300 V 208 A 46 46 0 0 1 96 188" fill="none" stroke="var(--clay)" stroke-width="1.2" opacity=".55"/>
+  </svg>
+  <svg class="deco pampas" viewBox="0 0 140 300" aria-hidden="true">
+    <path d="M70 300 V 96" fill="none" stroke="var(--clay)" stroke-width="1.6" opacity=".8"/>
+    <path d="M70 210 q -34 -6 -52 -46 M70 176 q -26 4 -40 -30 M70 236 q -30 8 -46 -34 M70 126 q 30 -6 44 -40 M70 92 q 24 0 40 -22" fill="none" stroke="var(--clay)" stroke-width="1.3" opacity=".7"/>
+    <ellipse cx="70" cy="82" rx="26" ry="34" fill="var(--rose-300)" opacity=".6"/>
+    <ellipse cx="48" cy="92" rx="16" ry="24" fill="var(--rose-200)" opacity=".7"/>
+    <ellipse cx="92" cy="90" rx="15" ry="22" fill="var(--rose-300)" opacity=".6"/>
+    <circle cx="70" cy="74" r="4" fill="var(--rose-700)"/>
+  </svg>
+  <div class="wrap">
+    <span class="kicker">Controle de equipamentos · hoje</span>
+    <h1>Ninguém sabe <em>onde está</em> o quê.</h1>
+    <p class="lead">O registro de quem pegou qual equipamento — notebooks, monitores, cabos, câmeras — é feito numa planilha compartilhada.</p>
+    <div class="cards">
+      <article class="card">
+        <span class="num">01</span>
+        <h3>Sem visibilidade</h3>
+        <p>Ninguém sabe o que está disponível.</p>
+      </article>
+      <article class="card">
+        <span class="num">02</span>
+        <h3>Itens somem</h3>
+        <p>Sem rastro de quem pegou ou devolveu.</p>
+      </article>
+      <article class="card">
+        <span class="num">03</span>
+        <h3>Devolução esquecida</h3>
+        <p>Só é registrada se alguém lembrar de atualizar a linha.</p>
+      </article>
+    </div>
+  </div>
+</section>
+<!-- SLIDE:2 -->
+<section class="slide" data-num="2">
+  <svg class="deco sun" viewBox="0 0 150 150" aria-hidden="true">
+    <circle cx="75" cy="75" r="26" fill="none" stroke="var(--rose-500)" stroke-width="1.4" opacity=".75"/>
+    <g stroke="var(--rose-400)" stroke-width="1.3" opacity=".65">
+      <path d="M75 28 V 14 M75 122 V 136 M28 75 H 14 M122 75 H 136 M41 41 L 31 31 M109 109 L 119 119 M41 109 L 31 119 M109 41 L 119 31"/>
+    </g>
+    <circle cx="75" cy="75" r="7" fill="var(--rose-300)"/>
+  </svg>
+  <svg class="deco rings" viewBox="0 0 170 170" aria-hidden="true">
+    <circle cx="85" cy="85" r="70" fill="none" stroke="var(--clay)" stroke-width="1.2" opacity=".7"/>
+    <circle cx="85" cy="85" r="54" fill="none" stroke="var(--rose-500)" stroke-width="1" opacity=".5" stroke-dasharray="2 6"/>
+    <circle cx="85" cy="85" r="6" fill="var(--clay)" opacity=".7"/>
+  </svg>
+  <div class="wrap split">
+    <div>
+      <span class="kicker">A solução · emprest.ai</span>
+      <h1>Empréstimo de equipamentos <em>sem planilha.</em></h1>
+      <p class="lead"><b>Quem usa:</b></p>
+      <div class="roles">
+        <span class="role"><b>Colaborador</b> — vê o catálogo, pede um item emprestado e devolve.</span>
+        <span class="role"><b>Operações</b> — cadastra equipamentos, vê quem está com o quê e registra devolução no balcão.</span>
+      </div>
+    </div>
+    <aside class="featurelist" aria-label="O que precisa existir na primeira versão">
+      <div class="feat"><span class="n">1</span><div><b>Login</b><p>Cada pessoa vê os próprios empréstimos.</p></div></div>
+      <div class="feat"><span class="n">2</span><div><b>Catálogo de equipamentos</b><p>Com a situação de cada um.</p></div></div>
+      <div class="feat"><span class="n">3</span><div><b>Solicitar empréstimo</b><p>De um item disponível.</p></div></div>
+      <div class="feat"><span class="n">4</span><div><b>Devolver</b><p>Um item que está comigo.</p></div></div>
+      <div class="feat"><span class="n">5</span><div><b>Tela de Operações</b><p>Todos os empréstimos em aberto.</p></div></div>
+    </aside>
+  </div>
+</section>
+<!-- SLIDE:3 -->
+<section class="slide" data-num="3">
+  <svg class="deco arch tall" viewBox="0 0 220 300" aria-hidden="true">
+    <path d="M26 300 V 172 A 84 84 0 0 1 194 172 V 300" fill="none" stroke="var(--rose-500)" stroke-width="1.4" opacity=".4"/>
+    <circle cx="194" cy="168" r="3.2" fill="var(--rose-500)" opacity=".7"/>
+  </svg>
+  <svg class="deco rings" style="left:auto;right:3.5%;top:auto;bottom:6%;width:min(9vw,130px)" viewBox="0 0 170 170" aria-hidden="true">
+    <circle cx="85" cy="85" r="70" fill="none" stroke="var(--clay)" stroke-width="1.2" opacity=".6"/>
+    <circle cx="85" cy="85" r="54" fill="none" stroke="var(--rose-500)" stroke-width="1" opacity=".45" stroke-dasharray="2 6"/>
+  </svg>
+  <div class="wrap">
+    <span class="kicker">Regras que Operações já decidiu</span>
+    <h1>Limites claros <em>desde o início.</em></h1>
+    <div class="cards rules">
+      <article class="card">
+        <span class="badge-num">3</span>
+        <h3>itens por pessoa</h3>
+        <p>Máximo de itens ao mesmo tempo.</p>
+      </article>
+      <article class="card">
+        <span class="badge-num">14</span>
+        <h3>dias de prazo</h3>
+        <p>Prazo padrão de devolução.</p>
+      </article>
+      <article class="card alert-card">
+        <span class="badge-num">⏱</span>
+        <h3>Atraso bloqueia</h3>
+        <p>Quem tem item em atraso não pega outro.</p>
+      </article>
+      <article class="card slate-card">
+        <span class="badge-num">↺</span>
+        <h3>Manutenção fora</h3>
+        <p>Não aparece como disponível.</p>
+      </article>
+    </div>
+    <div class="success">
+      <span class="mark">✦</span>
+      <div><b>Como saberemos que deu certo —</b> Operações consegue abandonar a planilha depois de duas semanas de uso.</div>
+    </div>
+    <p class="out">Fora desta versão: reserva com data futura · notificação por e-mail · importação da planilha atual.</p>
+  </div>
+</section>
+</main>
+<!-- CHROME -->
+<div class="chrome">
+  <div class="brand">emprest<span>.ai</span></div>
+  <button class="arrow prev" id="prev" aria-label="Slide anterior">←</button>
+  <div class="dots" id="dots"></div>
+  <button class="arrow next" id="next" aria-label="Próximo slide">→</button>
+  <div class="count"><span id="cur">01</span> / 03</div>
+  <div class="hint">use ← → ou clique</div>
+</div>
+<!-- SCRIPT -->
+<script>
+(function(){
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const dotsEl = document.getElementById('dots');
+  const curEl = document.getElementById('cur');
+  const prevBtn = document.getElementById('prev');
+  const nextBtn = document.getElementById('next');
+  let current = 0;
+  const total = slides.length;
+
+  slides.forEach(function(_, i){
+    const d = document.createElement('button');
+    d.type = 'button';
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.setAttribute('aria-label', 'Ir para o slide ' + (i + 1));
+    d.addEventListener('click', function(){ go(i); });
+    dotsEl.appendChild(d);
+  });
+  const dots = Array.from(dotsEl.children);
+
+  function pad(n){ return String(n).padStart(2, '0'); }
+  function render(){
+    slides.forEach(function(s, i){
+      s.classList.toggle('active', i === current);
+      playCards(s);
+    });
+    dots.forEach(function(d, i){ d.classList.toggle('active', i === current); });
+    curEl.textContent = pad(current + 1);
+  }
+  // Re-dispara a animação de entrada dos cartões (fade escalonado)
+  function playCards(slide){
+    slide.querySelectorAll('.card, .feat').forEach(function(el, i){
+      el.style.animation = 'none';
+      void el.offsetWidth;
+      el.style.animation = 'cardIn .55s ease both .08s';
+    });
+  }
+  function go(n){
+    current = (n + total) % total;
+    render();
+  }
+  function next(){ go(current + 1); }
+  function prev(){ go(current - 1); }
+
+  nextBtn.addEventListener('click', next);
+  prevBtn.addEventListener('click', prev);
+
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' '){ e.preventDefault(); next(); }
+    else if(e.key === 'ArrowLeft' || e.key === 'PageUp'){ e.preventDefault(); prev(); }
+    else if(e.key === 'Home'){ go(0); }
+    else if(e.key === 'End'){ go(total - 1); }
+  });
+
+  // toque (swipe)
+  let touchX = null;
+  document.addEventListener('touchstart', function(e){ touchX = e.changedTouches[0].clientX; }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    if(touchX === null) return;
+    const dx = e.changedTouches[0].clientX - touchX;
+    if(Math.abs(dx) > 50){ dx < 0 ? next() : prev(); }
+    touchX = null;
+  }, {passive:true});
+
+  // clique em qualquer lugar avança (exceto nos controles)
+  document.addEventListener('click', function(e){
+    if(e.target.closest('.chrome')) return;
+    next();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
