@@ -1,16 +1,17 @@
 import { useEffect, useRef } from 'react'
 import { Archive, ArrowRight, Check, Clock, MagnifyingGlass, Wrench, X } from '@phosphor-icons/react'
-import type { Equipment, EquipmentStatus, Filter } from './data/mock-data'
+import { formatDate, type Equipment, type EquipmentStatus, type Filter } from './equipment'
 
 const filters: Filter[] = ['Todos', 'Disponíveis', 'Emprestados', 'Em manutenção']
 
 type User = { name: string; initials: string; role: string }
 
-export function Navigation({ currentUser }: { currentUser: User }) {
-  const tabs = currentUser.role === 'Operações'
-    ? ['Catálogo', 'Operações', 'Equipamentos', 'Meus empréstimos']
-    : ['Catálogo', 'Meus empréstimos']
+export type Page = 'Catálogo' | 'Meus empréstimos'
+const tabs: Page[] = ['Catálogo', 'Meus empréstimos']
 
+export function Navigation({ currentUser, page, onNavigate, onSignOut }: {
+  currentUser: User; page: Page; onNavigate: (page: Page) => void; onSignOut: () => void
+}) {
   return (
     <header className="topbar">
       <div className="topbar-inner">
@@ -21,11 +22,11 @@ export function Navigation({ currentUser }: { currentUser: User }) {
         <nav className="main-nav" aria-label="Navegação principal">
           {tabs.map((tab) => (
             <button
-              className={`nav-tab ${tab === 'Catálogo' ? 'active' : ''}`}
+              className={`nav-tab ${tab === page ? 'active' : ''}`}
               type="button"
               key={tab}
-              aria-current={tab === 'Catálogo' ? 'page' : undefined}
-              onClick={() => undefined}
+              aria-current={tab === page ? 'page' : undefined}
+              onClick={() => onNavigate(tab)}
             >
               {tab}
             </button>
@@ -35,7 +36,7 @@ export function Navigation({ currentUser }: { currentUser: User }) {
           <span className="tag tag-outline">{currentUser.role}</span>
           <span className="avatar" aria-hidden="true">{currentUser.initials}</span>
           <span className="profile-name">{currentUser.name}</span>
-          <button className="logout-button" type="button" onClick={() => undefined}>Sair</button>
+          <button className="logout-button" type="button" onClick={onSignOut}>Sair</button>
         </div>
       </div>
     </header>
@@ -74,14 +75,13 @@ export function FilterBar({ activeFilter, onFilterChange }: { activeFilter: Filt
   )
 }
 
-export function EquipmentCard({ item, index, blocked, atLimit, onRequest }: { item: Equipment; index: number; blocked: boolean; atLimit: boolean; onRequest: (item: Equipment) => void }) {
-  const isMine = item.loanedTo === 'Ana Ribeiro'
+export function EquipmentCard({ item, index, onRequest }: { item: Equipment; index: number; onRequest: (item: Equipment) => void }) {
   const isAvailable = item.status === 'disponivel'
-  const unavailableLabel = isMine ? 'Está com você' : blocked ? 'Bloqueado por atraso' : atLimit ? 'Limite de 3 itens' : 'Indisponível'
-  const buttonLabel = isAvailable && !blocked && !atLimit ? 'Solicitar empréstimo' : item.status === 'manutencao' ? 'Indisponível' : item.status === 'emprestado' ? (isMine ? 'Está com você' : 'Emprestado') : unavailableLabel
+  const buttonLabel = isAvailable ? 'Solicitar empréstimo' : item.status === 'emprestado' ? 'Emprestado' : 'Indisponível'
 
   return (
     <article className="equipment-card card" role="listitem" style={{ animationDelay: `${index * 35}ms` }}>
+      {item.imageUrl && <img className="equipment-photo" src={item.imageUrl} alt={item.name} width={800} height={600} loading="lazy" />}
       <div className="card-topline">
         <span className="card-kicker">{item.category}</span>
         <StatusPill status={item.status} />
@@ -90,12 +90,12 @@ export function EquipmentCard({ item, index, blocked, atLimit, onRequest }: { it
       <span className="asset-tag">Patrimônio {item.assetTag}</span>
       <div className={`card-detail detail-${item.status}`}>
         {item.status === 'disponivel' && <><Check size={16} aria-hidden="true" /><span>Pronto para retirada no balcão</span></>}
-        {item.status === 'emprestado' && <><Clock size={16} aria-hidden="true" /><span>Com {item.loanedTo} · devolver até {item.dueDate}</span></>}
+        {item.status === 'emprestado' && <><Clock size={16} aria-hidden="true" /><span>Indisponível para retirada</span></>}
         {item.status === 'manutencao' && <><Wrench size={16} aria-hidden="true" /><span>{item.note}</span></>}
       </div>
-      <button className={`btn card-action ${isAvailable && !blocked && !atLimit ? 'btn-primary' : 'btn-secondary'}`} type="button" disabled={!isAvailable || blocked || atLimit} onClick={() => onRequest(item)}>
+      <button className={`btn card-action ${isAvailable ? 'btn-primary' : 'btn-secondary'}`} type="button" disabled={!isAvailable} onClick={() => onRequest(item)}>
         {buttonLabel}
-        {isAvailable && !blocked && !atLimit && <ArrowRight size={16} aria-hidden="true" />}
+        {isAvailable && <ArrowRight size={16} aria-hidden="true" />}
       </button>
     </article>
   )
@@ -106,34 +106,37 @@ function StatusPill({ status }: { status: EquipmentStatus }) {
   return <span className={`status-pill status-${status}`}>{statusCopy[status]}</span>
 }
 
-export function LoanDialog({ item, onCancel, onConfirm }: { item: Equipment; onCancel: () => void; onConfirm: () => void }) {
+export function LoanDialog({ item, dueAt, busy, error, onCancel, onConfirm }: {
+  item: Equipment; dueAt?: string; busy: boolean; error: string; onCancel: () => void; onConfirm: () => void
+}) {
   const cancelRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     cancelRef.current?.focus()
-    const handleEscape = (event: KeyboardEvent) => { if (event.key === 'Escape') onCancel() }
+    const handleEscape = (event: KeyboardEvent) => { if (event.key === 'Escape' && !busy) onCancel() }
     document.addEventListener('keydown', handleEscape)
     return () => document.removeEventListener('keydown', handleEscape)
-  }, [onCancel])
+  }, [busy, onCancel])
 
   return (
-    <div className="dialog-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onCancel() }}>
+    <div className="dialog-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget && !busy) onCancel() }}>
       <section className="dialog" role="dialog" aria-modal="true" aria-labelledby="loan-dialog-title">
         <div className="dialog-heading">
           <div>
             <span className="section-kicker">Nova solicitação</span>
-            <h2 className="dialog-title" id="loan-dialog-title">Solicitar equipamento?</h2>
+            <h2 className="dialog-title" id="loan-dialog-title">{dueAt ? 'Empréstimo criado' : 'Solicitar equipamento?'}</h2>
           </div>
-          <button className="icon-button" type="button" aria-label="Fechar diálogo" onClick={onCancel}><X size={18} aria-hidden="true" /></button>
+          <button className="icon-button" type="button" aria-label="Fechar diálogo" disabled={busy} onClick={onCancel}><X size={18} aria-hidden="true" /></button>
         </div>
         <p className="dialog-body">O equipamento ficará vinculado ao seu nome até a devolução no balcão.</p>
         <div className="dialog-summary">
           <span><small>Equipamento</small><strong>{item.name}</strong></span>
-          <span><small>Devolver até</small><strong className="accent-text">14/09/2026</strong></span>
+          <span><small>{dueAt ? 'Devolver até' : 'Prazo de devolução'}</small><strong className="accent-text">{dueAt ? formatDate(dueAt) : '14 dias corridos'}</strong></span>
         </div>
+        {error && <p role="alert">{error}</p>}
         <div className="dialog-actions">
-          <button className="btn btn-secondary" type="button" ref={cancelRef} onClick={onCancel}>Cancelar</button>
-          <button className="btn btn-primary" type="button" onClick={onConfirm}>Confirmar solicitação</button>
+          <button className="btn btn-secondary" type="button" ref={cancelRef} disabled={busy} onClick={onCancel}>{dueAt ? 'Fechar' : 'Cancelar'}</button>
+          {!dueAt && <button className="btn btn-primary" type="button" disabled={busy} onClick={onConfirm}>{busy ? 'Solicitando…' : 'Confirmar solicitação'}</button>}
         </div>
       </section>
     </div>
