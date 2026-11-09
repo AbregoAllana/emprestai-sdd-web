@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { beforeEach, expect, test, vi } from 'vitest'
 import { App } from './App'
 import { borrowEquipment, listEquipment, listMyLoans } from './api'
@@ -20,16 +21,38 @@ const imageUrl = 'https://example.supabase.co/storage/v1/object/public/equipment
 const notebook = { id: 'one', name: 'Notebook 14 polegadas', category: 'Notebook', assetTag: 'TI-0001', status: 'disponivel' as const, imageUrl }
 
 beforeEach(() => {
+  window.history.replaceState(null, '', '/')
   vi.resetAllMocks()
   state.userId = 'user-test'
   vi.mocked(listEquipment).mockResolvedValue([notebook, { ...notebook, id: 'two', assetTag: 'TI-0004', name: 'Notebook em manutenção', status: 'manutencao' }])
 })
 
-test('003/CA-01 sem sessão fica no login', async () => {
+test('004/CA-01 e CA-03 a entrada pública oferece acesso por teclado sem consultar o catálogo', async () => {
   state.userId = null
   render(<App />)
-  expect(await screen.findByRole('heading', { name: 'Entrar' })).toBeInTheDocument()
+  expect(await screen.findByRole('heading', { name: 'Empréstimo de equipamentos sem planilha' })).toBeInTheDocument()
+  const enterLink = screen.getByRole('link', { name: 'Entrar' })
+  expect(enterLink).toHaveAttribute('href', '/entrar')
+  const user = userEvent.setup()
+  await user.tab()
+  await user.tab()
+  expect(enterLink).toHaveFocus()
   expect(listEquipment).not.toHaveBeenCalled()
+})
+
+test('004/CA-02 e 003/CA-01 acesso direto ao login mantém o catálogo protegido', async () => {
+  state.userId = null
+  window.history.replaceState(null, '', '/entrar')
+  render(<App />)
+  expect(await screen.findByRole('heading', { name: 'Entrar' })).toBeInTheDocument()
+  expect(screen.getByLabelText('E-mail')).toBeInTheDocument()
+  expect(listEquipment).not.toHaveBeenCalled()
+})
+
+test('004/CA-02 sessão ativa em /entrar abre o catálogo', async () => {
+  window.history.replaceState(null, '', '/entrar')
+  render(<App />)
+  expect(await screen.findByRole('heading', { name: 'Catálogo' })).toBeInTheDocument()
 })
 
 test('003/CA-01 e CA-03 catálogo mostra foto e crédito e impede manutenção', async () => {

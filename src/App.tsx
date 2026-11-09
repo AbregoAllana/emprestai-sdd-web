@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Landing } from './Landing'
 import { Login } from './Login'
 import { supabase } from './auth'
 import { borrowEquipment, listEquipment, listMyLoans, type OpenLoan } from './api'
@@ -125,7 +126,10 @@ export function App() {
   }, [])
 
   if (supabase && userId === undefined) return <div className="state-box" role="status">Carregando sessão…</div>
-  if (!userId) return <Login onLoggedIn={() => undefined} />
+  if (!userId) {
+    const isLoginPath = window.location.pathname === '/entrar' || window.location.pathname === '/entrar/'
+    return isLoginPath ? <Login onLoggedIn={() => undefined} /> : <Landing />
+  }
   return <CatalogApp key={userId} />
 }
 
