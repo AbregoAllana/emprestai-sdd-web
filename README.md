@@ -40,7 +40,7 @@ O projeto usa o preset **Vite**, com `npm run build` como comando de build e
 as rotas da SPA funcionando quando uma URL é aberta diretamente.
 
 O domínio de produção configurado para este projeto é
-[`https://emprestaifrontend.vercel.app/`](https://emprestaifrontend.vercel.app/).
+[`https://SEU-PROJETO.vercel.app/`](https://SEU-PROJETO.vercel.app/).
 Depois de cada alteração na branch `main`, a Vercel deve criar um novo
 deployment a partir do commit publicado.
 

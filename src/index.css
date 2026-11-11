@@ -186,3 +186,23 @@ h1 { margin-top: 8px; font-size: 34px; font-weight: 800; line-height: 1.08; lett
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+.equipment-photo { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; border-radius: .75rem; }
+.photo-credit { margin-top: 1rem; }
+.photo-credit a { text-decoration: underline; }
+.loan-list { display: grid; gap: .75rem; padding: 0; list-style: none; }
+.loan-list li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem; padding: 1rem; }
+
+.landing { min-height: 100dvh; background: radial-gradient(ellipse at 0 0, #233b44, transparent 60%); }
+.landing-header, .landing-main { width: min(1060px, calc(100% - 48px)); margin-inline: auto; }
+.landing-header { padding-block: 24px; border-bottom: 1px solid var(--color-divider); }
+.landing-main { display: grid; grid-template-columns: 1.2fr 1fr; align-items: center; gap: clamp(24px, 6vw, 80px); padding-block: clamp(42px, 12vh, 140px); }
+.landing-cta { margin-top: 26px; text-decoration: none; }
+.landing-guide { padding: 24px; }
+.landing-guide h2 { margin: 0 0 12px; font-size: 18px; }
+.landing-guide ol { margin: 0; padding-inline-start: 20px; color: var(--color-clay); line-height: 1.65; }
+.landing-guide li + li { margin-top: 8px; }
+
+@media (max-width: 720px) {
+  .landing-main { grid-template-columns: 1fr; }
+}
