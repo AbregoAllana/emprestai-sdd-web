@@ -9,4 +9,4 @@ Ao escrever, alterar ou remover qualquer teste.
    o mesmo dado, com outro usuário, não retorna.
 
 ## Verificação
-<COMANDO-TESTES> passa com o banco local recém-resetado.
+`npm test`, `npm run build` e `npm run lint` passam no frontend. Os testes de banco pertencem à API e usam o PostgreSQL local descartável `emprestai_sdd`, com bootstrap e migrations aplicados antes de `npm test`.
